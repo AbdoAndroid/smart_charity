@@ -7,35 +7,44 @@ import '../shared/progress_dialog.dart';
 
 User? currentUser;
 
-register(User user) async {
-  await usersCollection.add(user.toMap());
-  return;
+Future<int> register(User user) async {
+  var userData = await usersCollection.doc(user.username).get();
+  if (userData.exists) {
+    return 0;
+  }
+  await usersCollection.doc(user.username).set(user.toMap());
+  return 1;
 }
 
-Future<User> getUserById(String id) async {
-  var snapshot = await usersCollection.doc(id).get();
+Future<User> getUserByUsername(String username) async {
+  var snapshot = await usersCollection.doc(username).get();
   return User.fromSnapshot(snapshot);
 }
 
-Future<String> getPhoneById(String id) async {
-  var snapshot = await usersCollection.doc(id).get();
+Future<String> getNameByUsername(String username) async {
+  var snapshot = await usersCollection.doc(username).get();
+  String name = (snapshot.data() as Map<String, dynamic>)['name'];
+  return name;
+}
+
+Future<String> getPhoneByUsername(String username) async {
+  var snapshot = await usersCollection.doc(username).get();
   return (snapshot.data() as Map<String, dynamic>)['mobile'];
 }
 
 Future<int> login(String username, String password) async {
-  var userData = await usersCollection.where("userName", isEqualTo: username).get();
-  if (userData.docs.isEmpty) {
+  var userData = await usersCollection.doc(username).get();
+  if (!userData.exists) {
     return 0;
   }
-  User user = User.fromSnapshot(userData.docs.first);
+  User user = User.fromSnapshot(userData);
   debugPrint(userData.toString());
   if (user.password == password) {
     currentUser = user;
     await Hive.openBox('login').then((box) {
       hideProgress();
-      box.put('userID', user.id);
-      box.put('normalUser', user.normalUser);
-      box.put('userName', user.userName);
+      box.put('isCharity', user.isCharity);
+      box.put('username', user.username);
       box.put('name', user.name);
       box.put('password', user.password);
       box.put('mobile', user.mobile);
@@ -49,11 +58,19 @@ Future<int> login(String username, String password) async {
 logout() async {
   await Hive.openBox('login').then((box) {
     hideProgress();
-    box.put('userID', '');
     box.put('normalUser', false);
-    box.put('userName', '');
+    box.put('username', '');
     box.put('name', '');
     box.put('password', '');
     box.put('mobile', '');
   });
+}
+
+Future<List<User>> getCharities() async {
+  List<User> charities = [];
+  var output = await usersCollection.where("isCharity", isEqualTo: true).get();
+  output.docs.forEach((element) {
+    charities.add(User.fromSnapshot(element));
+  });
+  return charities;
 }

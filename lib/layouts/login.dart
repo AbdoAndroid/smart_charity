@@ -1,13 +1,13 @@
-import 'package:bride_night/layouts/normal_user_home.dart';
-import 'package:bride_night/layouts/register.dart';
-import 'package:bride_night/layouts/service_provider_home.dart';
-import 'package:bride_night/model/user.dart';
-import 'package:bride_night/service/auth.dart';
-import 'package:bride_night/shared/alert_dialog.dart';
-import 'package:bride_night/shared/login_background.dart';
-import 'package:bride_night/shared/progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:smart_charity/layouts/charity_home.dart';
+import 'package:smart_charity/layouts/donor_home.dart';
+import 'package:smart_charity/layouts/register.dart';
+import 'package:smart_charity/model/user.dart';
+import 'package:smart_charity/service/auth.dart';
+import 'package:smart_charity/shared/alert_dialog.dart';
+import 'package:smart_charity/shared/login_background.dart';
+import 'package:smart_charity/shared/progress_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -24,9 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<User> getUserLogin() async {
     User user = await Hive.openBox('login').then((value) {
       return User(
-          id: value.get('userID', defaultValue: ' '),
-          normalUser: value.get('normalUser', defaultValue: true) as bool,
-          userName: value.get('userName', defaultValue: ' ') as String,
+          isCharity: value.get('isCharity', defaultValue: true) as bool,
+          username: value.get('username', defaultValue: ' ') as String,
           name: value.get('name', defaultValue: ' ') as String,
           password: value.get('password', defaultValue: ' ') as String,
           mobile: value.get('mobile', defaultValue: ' ') as String);
@@ -39,7 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _login() async {
     showProgress(context, "Loading ...", true);
-    int loginRes = await login(userNameController.text, passwordController.text);
+    int loginRes =
+        await login(userNameController.text, passwordController.text);
     if (loginRes == 0) {
       await hideProgress();
       showAlertDialog(context, "Invalid username!!");
@@ -49,12 +49,12 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       await hideProgress();
       debugPrint(currentUser.toString());
-      if (currentUser!.normalUser) {
+      if (currentUser!.isCharity) {
         await Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => NormalUserHome()));
+            context, MaterialPageRoute(builder: (context) => CharityHome()));
       } else {
         await Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => ServiceProviderHome()));
+            context, MaterialPageRoute(builder: (context) => NormalUserHome()));
       }
     }
   }
@@ -77,7 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Text(
                   "Login",
                   style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Color(0xFF2661FA), fontSize: 30),
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2661FA),
+                      fontSize: 30),
                   textAlign: TextAlign.left,
                 ),
               ),
@@ -142,8 +144,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: size.height * 0.05),
               Container(
-                alignment: Alignment.centerRight,
-                margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                alignment: Alignment.center,
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
@@ -154,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.all(0),
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(60.0)),
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)),
                     ),
                   ),
                   child: Container(
@@ -162,11 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 50.0,
                     width: size.width * 0.5,
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(80.0),
-                        gradient: const LinearGradient(colors: [
-                          Color.fromARGB(255, 109, 148, 250),
-                          Color.fromARGB(255, 188, 205, 250)
-                        ])),
+                        borderRadius: BorderRadius.circular(40.0),
+                        color: Color(0xFF2661FA)),
                     padding: const EdgeInsets.all(0),
                     child: const Text(
                       "Login",
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: size.height * 0.05),
+              SizedBox(height: size.height * 0.1),
               Container(
                 padding: EdgeInsets.only(left: size.width * 0.25),
                 child: GestureDetector(
@@ -188,8 +188,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(color: Color(0xFF2661FA)),
                   ),
                   onTap: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => const RegisterScreen()));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RegisterScreen()));
                   },
                 ),
               ),

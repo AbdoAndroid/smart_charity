@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "360064767551",
+    "project_id": "smartcharity-43301",
+    "storage_bucket": "smartcharity-43301.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360064767551:android:cdd94d3de64c08476b8a8a",
+        "android_client_info": {
+          "package_name": "com.example.smart_charity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "360064767551-obj46qs91h047rn0sau5njkva24htgk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApRUcOd8ngaOK_LHrpLfwKMks8IuVb0cE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "360064767551-obj46qs91h047rn0sau5njkva24htgk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

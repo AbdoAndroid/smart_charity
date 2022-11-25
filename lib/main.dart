@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:smart_charity/service/auth.dart';
 
+import 'firebase_options.dart';
+import 'layouts/charity_home.dart';
+import 'layouts/donor_home.dart';
 import 'layouts/login.dart';
-import 'layouts/normal_user_home.dart';
-import 'layouts/service_provider_home.dart';
 import 'model/user.dart';
 
 void main() async {
@@ -17,11 +18,13 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('login');
   User _user = await getUserLogin();
-  if (_user.id == '' || _user.id == ' ') {
-    runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: LoginScreen()));
+  if (_user.username == '' || _user.username == ' ') {
+    runApp(const MaterialApp(
+        debugShowCheckedModeBanner: false, home: LoginScreen()));
   } else {
     runApp(MaterialApp(
-        debugShowCheckedModeBanner: false, home: _user.normalUser ? NormalUserHome() : ServiceProviderHome()));
+        debugShowCheckedModeBanner: false,
+        home: _user.isCharity ? CharityHome() : NormalUserHome()));
   }
 }
 
@@ -30,9 +33,8 @@ Future<User> getUserLogin() async {
 
   currentUser = await Hive.openBox('login').then((value) {
     return User(
-        id: value.get('userID', defaultValue: ' '),
-        normalUser: value.get('normalUser', defaultValue: true) as bool,
-        userName: value.get('userName', defaultValue: ' ') as String,
+        isCharity: value.get('isCharity', defaultValue: false) as bool,
+        username: value.get('username', defaultValue: ' ') as String,
         name: value.get('name', defaultValue: ' ') as String,
         password: value.get('password', defaultValue: ' ') as String,
         mobile: value.get('mobile', defaultValue: ' ') as String);

@@ -1,42 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  late String id;
   late String name;
-  late String userName;
+  late String username;
   late String mobile;
-  late bool normalUser;
+  late bool isCharity;
   late String password;
+  String? charityNumber;
   User(
-      {required this.id,
-      required this.name,
-      required this.userName,
+      {required this.name,
+      required this.username,
       required this.mobile,
-      required this.normalUser,
+      required this.isCharity,
+      this.charityNumber,
       required this.password});
   Map<String, dynamic> toMap() {
     return {
-      'Id': id,
-      'Name': name,
-      'userName': userName,
+      'name': name,
+      'username': username,
       'mobile': mobile,
-      'normalUser': normalUser,
+      'isCharity': isCharity,
       'password': password,
+      'charityNumber': charityNumber
     };
   }
 
   factory User.fromSnapshot(DocumentSnapshot snapshot) {
-    User u = User.fromJson(snapshot.data() as Map<String, dynamic>);
-    u.id = snapshot.id;
-    return u;
+    return User.fromJson(snapshot.data() as Map<String, dynamic>);
   }
   factory User.fromJson(Map<String, dynamic> map) {
     return User(
-        id: map['Id'],
-        name: map['Name'],
-        userName: map['userName'],
+        name: map['name'],
+        username: map['username'],
         mobile: map['mobile'],
-        normalUser: map['normalUser'],
+        isCharity: map['isCharity'],
+        charityNumber: map['charityNumber'],
         password: map['password']);
   }
 }

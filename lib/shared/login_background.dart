@@ -20,34 +20,10 @@ class LoginBackground extends StatelessWidget {
         alignment: Alignment.center,
         children: <Widget>[
           Positioned(
-            top: 0,
-            right: 0,
-            child: Image.asset("assets/images/top1.png",
-                width: MediaQuery.of(context).size.width),
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Image.asset("assets/images/top2.png",
-                width: MediaQuery.of(context).size.width),
-          ),
-          Positioned(
-            top: 60,
+            top: 80,
             left: size.width * 0.35,
-            child: Image.asset("assets/images/brides.png",
-                color: const Color(0xFF2661FA), width: size.width * 0.35),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Image.asset("assets/images/bottom1.png",
-                width: MediaQuery.of(context).size.width),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Image.asset("assets/images/bottom2.png",
-                width: MediaQuery.of(context).size.width),
+            child: Image.asset("assets/images/charity.png",
+                color: const Color(0xFF2661FA), width: size.width * 0.3),
           ),
           Positioned(
             top: MediaQuery.of(context).size.height * 0.2,

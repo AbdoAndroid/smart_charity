@@ -1,39 +1,52 @@
-import 'package:bride_night/model/service.dart';
-import 'package:bride_night/service/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_charity/model/donation.dart';
+import 'package:smart_charity/service/auth.dart';
+import 'package:smart_charity/shared/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ViewService extends StatefulWidget {
-  const ViewService({Key? key, required this.service}) : super(key: key);
-  final Service service;
+import '../service/donations.dart';
+
+class ViewDonation extends StatefulWidget {
+  const ViewDonation({Key? key, required this.donation}) : super(key: key);
+  final Donation donation;
   @override
-  State<ViewService> createState() => _ViewServiceState();
+  State<ViewDonation> createState() => _ViewDonationState();
 }
 
-class _ViewServiceState extends State<ViewService> {
+class _ViewDonationState extends State<ViewDonation> {
   TextEditingController categoryController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController cityController = TextEditingController();
-  TextEditingController fullAddressController = TextEditingController();
-  TextEditingController priceController = TextEditingController();
+  TextEditingController donorController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    categoryController = TextEditingController(text: widget.service.category);
-    descriptionController = TextEditingController(text: widget.service.description);
-    cityController = TextEditingController(text: widget.service.city);
-    fullAddressController = TextEditingController(text: widget.service.fullAddress);
-    priceController = TextEditingController(text: widget.service.price.toString());
+    categoryController =
+        TextEditingController(text: categories[widget.donation.category]);
+    descriptionController =
+        TextEditingController(text: widget.donation.description);
+    cityController =
+        TextEditingController(text: widget.donation.city.toString());
+    _initDonorAndPhone();
+  }
+
+  _initDonorAndPhone() async {
+    String _name = await getNameByUsername(widget.donation.donorID);
+    String _phone = await getPhoneByUsername(widget.donation.donorID);
+    setState(() {
+      donorController.text = _name;
+      phoneController.text = _phone;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('View service details'),
+        title: Text('View Donation details'),
       ),
       body: Form(
         key: _formKey,
@@ -96,14 +109,14 @@ class _ViewServiceState extends State<ViewService> {
                 alignment: Alignment.centerRight,
                 margin: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextFormField(
-                  controller: fullAddressController,
+                  controller: donorController,
                   readOnly: true,
                   maxLines: 3,
                   minLines: 1,
                   decoration: const InputDecoration(
-                    labelText: "Full Address",
+                    labelText: "Donor: ",
                     prefixIcon: Icon(
-                      Icons.location_pin,
+                      Icons.person,
                       color: Color(0xFF2661FA),
                     ),
                   ),
@@ -114,13 +127,14 @@ class _ViewServiceState extends State<ViewService> {
                 alignment: Alignment.centerRight,
                 margin: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextFormField(
-                  controller: priceController,
-                  keyboardType: TextInputType.numberWithOptions(signed: true, decimal: true),
+                  controller: phoneController,
+                  keyboardType: TextInputType.numberWithOptions(
+                      signed: true, decimal: true),
                   readOnly: true,
                   decoration: const InputDecoration(
-                    labelText: "Price",
+                    labelText: "Phone",
                     prefixIcon: Icon(
-                      Icons.attach_money,
+                      Icons.call,
                       color: Color(0xFF2661FA),
                     ),
                   ),
@@ -129,20 +143,42 @@ class _ViewServiceState extends State<ViewService> {
               const SizedBox(
                 height: 30,
               ),
+              Visibility(
+                visible: widget.donation.status == 1 && currentUser!.isCharity,
+                child: ElevatedButton(
+                  child: Text('Set ad delivered'),
+                  onPressed: () {
+                    setDelivered();
+                  },
+                ),
+              ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.call),
-        onPressed: () => callProvider(widget.service.providerID),
-      ),
+      floatingActionButton: currentUser!.isCharity
+          ? FloatingActionButton(
+              child: Icon(Icons.call),
+              onPressed: () => callProvider(widget.donation.donorID),
+            )
+          : null,
     );
   }
 
-  callProvider(String providerID) async {
-    String phone = await getPhoneById(providerID);
-    Uri phoneno = Uri.parse('tel:$phone');
+  setDelivered() async {
+    await changeStatus(widget.donation.id, 2);
+    setState(() {
+      widget.donation.status = 2;
+    });
+  }
+
+  callProvider(String donorID) async {
+    //String phone = await getPhoneByUsername(donorID);
+    Uri phoneno = Uri.parse('tel:${phoneController.text}');
     await launchUrl(phoneno);
+    await changeStatus(widget.donation.id, 1);
+    setState(() {
+      widget.donation.status = 1;
+    });
   }
 }

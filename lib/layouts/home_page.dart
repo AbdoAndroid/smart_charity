@@ -1,5 +1,5 @@
-import 'package:bride_night/model/user.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_charity/model/user.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.user}) : super(key: key);
